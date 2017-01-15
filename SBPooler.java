@@ -21,23 +21,23 @@ import java.util.Date;
 import java.util.Random;
 import javax.xml.transform.OutputKeys;
 
-public class SBPooler
+class SBPooler
 {
 
-   private BufferedReader f_names = null;
+
    private FileWriter f_log = null;
-   private String s_log = "log.txt";
+   private final String s_log = "log.txt";
    private String s_dir = "";
    private String s_log_final = "log.txt";
    private String s_names = "names.txt";
    private String afc_team = "AFC";
    private String nfc_team = "NFC";
    private String s_postfix = "";
+   private int q_cnt = 4;
    private boolean b_jumble = true;
    private ArrayList<String> c_names = new ArrayList<String>();
    private Random rn = new Random();
    private String title = "Grid";
-   private String[][][] short_format = new String[10][10][4];
 
    private int [][] afc_arr = {
            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
@@ -51,7 +51,7 @@ public class SBPooler
            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
 
 
-   SBPooler()
+   private SBPooler()
    {
       try
       {
@@ -125,8 +125,8 @@ public class SBPooler
    {
       try
       {
-         f_names = new BufferedReader( new FileReader( s_names ));
-         String tmp_str = null;
+         BufferedReader f_names = new BufferedReader( new FileReader( s_names ));
+         String tmp_str;
          log( "\nGetting Player Names from " + s_names );
 
          while (( tmp_str = f_names.readLine()) != null )
@@ -159,22 +159,36 @@ public class SBPooler
    {
       log( "\nCreating short format template to filename:" + s_dir + " Short_Format" + s_postfix + ".csv" );
 
+      String[][][] short_format = new String[10][10][q_cnt];
+      for ( int k = 0; k < q_cnt; k++ )
+         for ( int n = 0; n < 10; n++ )
+            for ( int a = 0; a < 10; a++ )
+            {
+               int _n = nfc_arr[k][n];
+               int _a = afc_arr[k][a];
+               short_format[_n][_a][k] = c_names.get( n + a * 10 );
+            }
 
       try
       {
          FileWriter writer = new FileWriter( s_dir + "Short_Format" + s_postfix + ".csv" );
-         writer.write( nfc_team + "," + afc_team + ",1st Quarter,Halftime,3rd Quarter,Final," );
-         writer.write( nfc_team + "," + afc_team + ",1st Quarter,Halftime,3rd Quarter,Final\n" );
+         String append = ",1st Quarter,Halftime,3rd Quarter,Final,";
+         if ( q_cnt == 2 )
+            append = ",Halftime,Final,";
+         if ( q_cnt == 1 )
+            append = ",Final,";
+         writer.write( nfc_team + "," + afc_team + append );
+         writer.write( nfc_team + "," + afc_team + append + "\n" );
          for ( int i = 0; i < 5; i++ )
             for ( int j = 0; j < 10; j++ )
             {
                writer.write( Integer.toString( i ) + "," + Integer.toString( j ) + "," );
-               for ( int k = 0; k < 4; k++ )
+               for ( int k = 0; k < q_cnt; k++ )
                   writer.write( short_format[i][j][k] + "," );
 
                writer.write( Integer.toString( i + 5 ) + "," + Integer.toString( j ) + "," );
-               for ( int k = 0; k < 4; k++ )
-                  writer.write( short_format[( i + 5 )][j][k] + "," );
+               for ( int k = 0; k < q_cnt; k++ )
+                  writer.write( short_format[i + 5][j][k] + "," );
                writer.write( "\n" );
             }
 
@@ -187,7 +201,7 @@ public class SBPooler
       log( "Short format created" );
    }
 
-   public void create_grid()
+   private void create_grid()
    {
 
       for ( int i = 0; i < 4; i++ )
@@ -211,7 +225,7 @@ public class SBPooler
          root_node.setAttribute( "xmlns", "http://www.w3.org/1999/xhtml" );
          xml.appendChild( root_node );
 
-         log( "\nCreating Full 4 Quarter Grid" );
+         log( "\nCreating Grid" );
 
          Element head_node = add_element( xml, root_node, "head", "" );
          add_element( xml, head_node, "title", "Superbowl Pool - " + title );
@@ -233,11 +247,8 @@ public class SBPooler
          // Write Header Table Row
          Element table_row = add_element( xml, table_node, "tr", "" );
          Element table_col = add_element( xml, table_row, "td", " " ); // Left, upper corner
-         table_col.setAttribute( "class", "corner_lt" );
-
-         table_col = add_element( xml, table_row, "td", " " );
-         table_col.setAttribute( "class", "corner_t" );
-         table_col.setAttribute( "colspan", "4" ); //
+         table_col.setAttribute( "class", "clt" );
+         table_col.setAttribute( "colspan", Integer.toString( q_cnt + 1 )); //
 
          table_col = add_element( xml, table_row, "td", "" ); // NFC team name
          for ( int i = 0; i < nfc_team.length(); i++ )
@@ -248,53 +259,62 @@ public class SBPooler
          table_col.setAttribute( "class", "nfc_team" );
          table_col.setAttribute( "colspan", "10" );
 
-         for ( int j = 0; j < 4; j++ )
+         for ( int j = 0; j < q_cnt; j++ )
          {
             // Write NFC First Quarter Row
             table_row = add_element( xml, table_node, "tr", "" );
+
+            for ( int k = 0; k < ( j + 1 ); k++ )
+            {
+               table_col = add_element( xml, table_row, "td", "" );
+               table_col.setAttribute( "class", "cl" );
+            }
+            String str;
             switch ( j )
             {
                case 0 :
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "rowspan", "4" );
-                  table_col.setAttribute( "class", "corner_l" );
-                  table_col = add_element( xml, table_row, "td", "1st Quarter" );
-                  table_col.setAttribute( "class", "corner_lt" );
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "class", "corner_t" );
-                  table_col.setAttribute( "colspan", "3" );
+                  str = ( q_cnt == 4 ? "1st Quarter" : ( q_cnt == 2 ? "Halftime" : "Final"));
+                  table_col = add_element( xml, table_row, "td", str );
+                  table_col.setAttribute( "class", "clt q1" );
+
+                  if ( q_cnt > 1 )
+                  {
+                     table_col = add_element( xml, table_row, "td", "" );
+                     table_col.setAttribute( "class", "ct q1" );
+                     table_col.setAttribute( "colspan", Integer.toString( q_cnt - 1 - j ) );
+                  }
                   break;
                case 1 :
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "rowspan", "3" );
-                  table_col.setAttribute( "class", "corner_l" );
-                  table_col = add_element( xml, table_row, "td", "Halftime" );
-                  table_col.setAttribute( "class", "corner_lt" );
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "class", "corner_t" );
-                  table_col.setAttribute( "colspan", "2" );
+                  str = ( q_cnt == 4 ? "Halftime" : "Final" );
+                  table_col = add_element( xml, table_row, "td", str );
+                  table_col.setAttribute( "class", "clt q2" );
+
+                  if ( q_cnt > 2 )
+                  {
+                     table_col = add_element( xml, table_row, "td", "" );
+                     table_col.setAttribute( "class", "ct q2" );
+                     table_col.setAttribute( "colspan", Integer.toString( q_cnt - 1 - j ) );
+                  }
                   break;
                case 2 :
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "rowspan", "2" );
-                  table_col.setAttribute( "class", "corner_l" );
                   table_col = add_element( xml, table_row, "td", "3rd Quarter" );
-                  table_col.setAttribute( "class", "corner_lt" );
+                  table_col.setAttribute( "class", "clt q3" );
                   table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "class", "corner_t" );
+                  table_col.setAttribute( "class", "ct q3" );
                   break;
                case 3 :
-                  table_col = add_element( xml, table_row, "td", "" );
-                  table_col.setAttribute( "class", "corner_l" );
                   table_col = add_element( xml, table_row, "td", "Final" );
-                  table_col.setAttribute( "class", "corner_lt" );
+                  table_col.setAttribute( "class", "clt q4" );
                   break;
             }
 
             for ( int i = 0; i <= 9; i++ )
             {
                table_col = add_element( xml, table_row, "td", Integer.toString( nfc_arr[j][i] ));
-               table_col.setAttribute( "class", "nfc_list" );
+               String s = "nfc " + "q" + Integer.toString( j + 1 ) + " c" + Integer.toString( i );
+               table_col.setAttribute( "class", s );
+               s = "n" + Integer.toString( j + 1 ) + Integer.toString( nfc_arr[j][i] );
+               table_col.setAttribute( "id", s );
             }
          }
 
@@ -315,22 +335,22 @@ public class SBPooler
          {
             if ( i > 0 ) table_row = add_element( xml, table_node, "tr", "" );
 
-            for ( int j = 0; j < 4; j++ )
+            for ( int j = 0; j < q_cnt; j++ )
             {
                table_col = add_element( xml, table_row, "td", Integer.toString( afc_arr[j][i] ) );
-               table_col.setAttribute( "class", "afc_list" );
+               String s = "afc " + "q" + Integer.toString( j + 1) + " r" + Integer.toString( i );
+               table_col.setAttribute( "class", s );
+               s = "a" + Integer.toString( j + 1) + Integer.toString( afc_arr[j][i] );
+               table_col.setAttribute( "id", s );
             }
 
             for ( int j = 0; j <= 9; j++ )
             {
                table_col = add_element( xml, table_row, "td", c_names.get(( i * 10 ) + j ));
-               String str = "";
-               if (( i % 2 == 0 ) && ( j % 2 == 0 )) str = "name d";
-               else if (( i % 2 == 0 ) && ( j % 2 == 1 )) str = "name c";
-               else if (( i % 2 == 1 ) && ( j % 2 == 0 )) str = "name b";
-               else if (( i % 2 == 1 ) && ( j % 2 == 1 )) str = "name a";
+               String str = "r" + Integer.toString( i ) + " c" + Integer.toString( j );
                table_col.setAttribute( "class", str );
-               //short_format[nfc_array[j]][afc_array[i]][short_idx] = c_names.get(( i * 10 ) + j );
+               table_col.setAttribute( "id", Integer.toString( i * 10 + j ));
+               //short_format[nfc_arr[j]][afc_arr[i]][short_idx] = c_names.get(( i * 10 ) + j );
             }
          }
 
@@ -339,7 +359,8 @@ public class SBPooler
          Transformer transformer = transformerFactory.newTransformer();
          DOMSource source = new DOMSource( xml );
          transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");         StreamResult result = new StreamResult( new File( s_dir + title + ".htm" ));
+         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+         StreamResult result = new StreamResult( new File( s_dir + "Grid" + s_postfix + ".htm" ));
 
          transformer.transform( source, result );
       }
@@ -348,7 +369,7 @@ public class SBPooler
          System.out.println( e.getMessage());
       }
 
-      log( "\n" + title + " table created and stored to " + title + ".htm" );
+      log( "\n" + title + " table created and stored to " + s_dir + "Grid" + s_postfix + ".htm" );
 
    }
 
@@ -396,21 +417,39 @@ public class SBPooler
             pool.nfc_team = args[++i];
             pool.log( "NFC Team Name: " + pool.nfc_team );
          }
+         else if ( args[i].toLowerCase().equals( "/t" ))
+         {
+            pool.title = args[++i];
+            pool.log( "Using Title: " + pool.title );
+         }
          else if ( args[i].toLowerCase().equals( "/nj" ))
          {
             pool.b_jumble = false;
-            pool.log( "Name jumpling disabled." );
+            pool.log( "Name jumbling disabled." );
+         }
+         else if ( args[i].toLowerCase().equals( "/q1" ))
+         {
+            pool.q_cnt = 1;
+            pool.log( "Using only one set of numbers (Final)" );
+         }
+         else if ( args[i].toLowerCase().equals( "/q2" ))
+         {
+            pool.q_cnt = 2;
+            pool.log( "Using only two sets of numbers (Halftime, Final)" );
          }
          else if ( args[i].toLowerCase().equals( "/?" ))
          {
             System.out.println( "\nSBPooler <options> </l file> </n file>" );
-            System.out.println( "/n <file> - Names File (default: names.txt. Text file containing 100 names)." );
-            System.out.println( "/l <file> - Log File (default: log.txt)." );
-            System.out.println( "/p <text> - Postfix to the output file names." );
-            System.out.println( "/d <text> - Directory to put the output files." );
-            System.out.println( "/afc <text> - AFC Team Name." );
-            System.out.println( "/nfc <text> - NFC Team Name." );
-            System.out.println( "/nj - \"No Jumbling,\" do not randomize the input names list." );
+            System.out.println( "/n <file> - Names File (default: names.txt. Text file containing 100 names)" );
+            System.out.println( "/l <file> - Log File (default: log.txt)" );
+            System.out.println( "/p <text> - Postfix to the output file names" );
+            System.out.println( "/d <text> - Directory to put the output files" );
+            System.out.println( "/t <text> - Title (default: Grid)" );
+            System.out.println( "/afc <text> - AFC Team Name (default: AFC)" );
+            System.out.println( "/nfc <text> - NFC Team Name (default: NFC)" );
+            System.out.println( "/nj - \"No Jumbling,\" do not randomize the input names list" );
+            System.out.println( "/q1 - Only use one set of random numbers (Final)" );
+            System.out.println( "/q2 - Only use two sets of random numbers (Halftime, Final)." );
             return;
          }
 
@@ -435,6 +474,7 @@ public class SBPooler
 
       if ( pool.b_jumble ) pool.jumble_names();
       pool.create_grid();
+      pool.create_short_format();
 
       System.out.println( "Process Complete" );
       pool.log( "\nProcess Complete" );
@@ -445,7 +485,6 @@ public class SBPooler
       if ( !pool.s_log_final.equals( pool.s_log ))
       {
          File flog = new File( pool.s_log );
-
          flog.renameTo( new File( pool.s_log_final ));
       }
    }
