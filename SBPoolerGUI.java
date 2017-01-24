@@ -57,18 +57,21 @@ public class SBPoolerGUI
    public SBPoolerGUI()
    {
       pool = new SBPooler();
+
       btnCreate.addActionListener(new ActionListener()
       {
          @Override
          public void actionPerformed( ActionEvent e )
          {
             Date d = new Date();
-            pool.log( "Program Start: " + d.toString());
+            pool.s_log = edLogFile.getText();
 
+            pool.log( "Program Start: " + d.toString());
             pool.afc_team = edAFC.getText();
             pool.nfc_team = edNFC.getText();
-            pool.s_log = edLogFile.getText();
+
             pool.title = edTitle.getText();
+            pool.s_postfix = edPostFix.getText();
             pool.s_labels[0] = edQ1.getText();
             pool.s_labels[1] = edQ2.getText();
             pool.s_labels[2] = edQ3.getText();
@@ -107,7 +110,7 @@ public class SBPoolerGUI
 
             if ( userSelection == JFileChooser.APPROVE_OPTION )
             {
-               loadFile( fileChooser.getSelectedFile().getName());
+               loadFile( fileChooser.getSelectedFile());
             }
 
          }
@@ -143,9 +146,42 @@ public class SBPoolerGUI
             writeProperties();
          }
       });
+      rbQ4.addActionListener(new ActionListener()
+      {
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            edQ1.setEnabled( true );
+            edQ2.setEnabled( true );
+            edQ3.setEnabled( true );
+            edQ4.setEnabled( true );
+         }
+      });
+      rbQ2.addActionListener(new ActionListener()
+      {
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            edQ1.setEnabled( false );
+            edQ2.setEnabled( true );
+            edQ3.setEnabled( false );
+            edQ4.setEnabled( true );
+         }
+      });
+      rbQ1.addActionListener(new ActionListener()
+      {
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            edQ1.setEnabled( false );
+            edQ2.setEnabled( false );
+            edQ3.setEnabled( false );
+            edQ4.setEnabled( true );
+         }
+      });
    }
 
-   private void loadFile( String fn )
+   private void loadFile( File fn )
    {
       try
       {
