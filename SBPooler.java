@@ -26,8 +26,8 @@ public class SBPooler extends cSBPooler
          }
          else if ( args[i].toLowerCase().equals( "/p" ))
          {
-            pool.s_postfix = args[++i];
-            pool.log( "Used Postfix: " + pool.s_postfix );
+            pool.setPostfix( args[++i] );
+            pool.log( "Used Postfix: " + pool.getPostfix());
          }
          else if ( args[i].toLowerCase().equals( "/d" ))
          {
@@ -44,52 +44,52 @@ public class SBPooler extends cSBPooler
          }
          else if ( args[i].toLowerCase().equals( "/afc" ))
          {
-            pool.afc_team = args[++i];
-            pool.log( "AFC Team Name: " + pool.afc_team );
+            pool.setAFC( args[++i] );
+            pool.log( "AFC Team Name: " + pool.getAFC());
          }
          else if ( args[i].toLowerCase().equals( "/nfc" ))
          {
-            pool.nfc_team = args[++i];
-            pool.log( "NFC Team Name: " + pool.nfc_team );
+            pool.setNFC( args[++i] );
+            pool.log( "NFC Team Name: " + pool.getNFC());
          }
          else if ( args[i].toLowerCase().equals( "/t" ))
          {
-            pool.title = args[++i];
-            pool.log( "Using Title: " + pool.title );
+            pool.setTitle( args[++i] );
+            pool.log( "Using Title: " + pool.getTitle());
          }
          else if ( args[i].toLowerCase().equals( "/t1" ))
          {
-            pool.s_labels[0] = args[++i];
+            pool.setLabel(0, args[++i] );
             //pool.log( "Using Title: " + pool.title );
          }
          else if ( args[i].toLowerCase().equals( "/t2" ))
          {
-            pool.s_labels[1] = args[++i];
+            pool.setLabel(1, args[++i] );
             //pool.log( "Using Title: " + pool.title );
          }
          else if ( args[i].toLowerCase().equals( "/t3" ))
          {
-            pool.s_labels[2] = args[++i];
+            pool.setLabel(2, args[++i] );
             //pool.log( "Using Title: " + pool.title );
          }
          else if ( args[i].toLowerCase().equals( "/t4" ))
          {
-            pool.s_labels[3] = args[++i];
+            pool.setLabel(3, args[++i] );
             //pool.log( "Using Title: " + pool.title );
          }
          else if ( args[i].toLowerCase().equals( "/nj" ))
          {
-            pool.b_jumble = false;
+            pool.setJumbled( false );
             pool.log( "Name jumbling disabled." );
          }
          else if ( args[i].toLowerCase().equals( "/q1" ))
          {
-            pool.q_cnt = 1;
+            pool.setQCount( 1 );
             pool.log( "Using only one set of numbers (Final)" );
          }
          else if ( args[i].toLowerCase().equals( "/q2" ))
          {
-            pool.q_cnt = 2;
+            pool.setQCount( 2 );
             pool.log( "Using only two sets of numbers (Halftime, Final)" );
          }
          else if ( args[i].toLowerCase().equals( "/?" ))
@@ -128,7 +128,7 @@ public class SBPooler extends cSBPooler
          pool.log( tmp_str );
       }
 
-      if ( pool.b_jumble ) pool.jumble_names();
+      if ( pool.isJumbled()) pool.jumble_names();
       pool.create_grid();
       pool.create_short_format();
 

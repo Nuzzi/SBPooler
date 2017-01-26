@@ -27,14 +27,57 @@ public class cSBPooler
    public String s_log = "log.txt";
    public String s_dir = "";
    public String s_names = "names.txt";
-   public String afc_team = "AFC";
-   public String nfc_team = "NFC";
-   public String s_postfix = "";
-   public String title = "Grid";
-   public String [] s_labels = { "1st Quarter", "Halftime", "3rd Quarter", "Final" };
 
-   public int q_cnt = 4;
-   public boolean b_jumble = true;
+   // AFC Team Name
+   private String afc_team = "AFC";
+   public String getAFC() { return afc_team; }
+   public void setAFC( String afc_team ) { this.afc_team = afc_team; }
+
+   // NFC Team Name
+   private String nfc_team = "NFC";
+   public String getNFC() { return nfc_team; }
+   public void setNFC( String nfc_team ) { this.nfc_team = nfc_team; }
+
+   // Postfix - additional text to add to the end of the generated files
+   // Grid<postfix>.htm
+   // Short_Format<postfix>.csv
+   private String s_postfix = "";
+   public String getPostfix() { return s_postfix; }
+   public void setPostfix( String s_postfix ) { this.s_postfix = s_postfix; }
+
+   // Title - The title of the webpage
+   private String title = "Grid";
+   public String getTitle() { return title; }
+   public void setTitle( String title ) { this.title = title; }
+
+   // Labels - The text for each quarter, half, and/or final.
+   private String [] s_labels = { "1st Quarter", "Halftime", "3rd Quarter", "Final" };
+   public String getLabel( int idx )
+   {
+      if ( idx >= 0  && idx < 4 )
+         return s_labels[idx];
+      else
+         return "";
+   }
+   public void setLabel( int idx, String label )
+   {
+      if ( idx >= 0 && idx < 4 )
+         s_labels[idx] = label;
+   }
+
+   // "Quarter" count - how many set of numbers to generate
+   private int q_cnt = 4;
+   public int getQCount() { return q_cnt; }
+   public void setQCount( int cnt )
+   {
+      if ( cnt == 4 || cnt == 2 || cnt == 1 )
+         this.q_cnt = cnt;
+   }
+
+   // Jumble Names - set this to false if you do not want to change the order of the names.
+   private boolean b_jumble = true;
+   public boolean isJumbled() { return b_jumble; }
+   public void setJumbled( boolean jumble ) { this.b_jumble = jumble; }
 
    private int [][] afc_arr = {
            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },

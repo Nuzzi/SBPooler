@@ -67,16 +67,16 @@ public class SBPoolerGUI
             pool.s_log = edLogFile.getText();
 
             pool.log( "Program Start: " + d.toString());
-            pool.afc_team = edAFC.getText();
-            pool.nfc_team = edNFC.getText();
+            pool.setAFC( edAFC.getText());
+            pool.setNFC( edNFC.getText());
 
-            pool.title = edTitle.getText();
-            pool.s_postfix = edPostFix.getText();
-            pool.s_labels[0] = edQ1.getText();
-            pool.s_labels[1] = edQ2.getText();
-            pool.s_labels[2] = edQ3.getText();
-            pool.s_labels[3] = edQ4.getText();
-            pool.q_cnt = ( rbQ4.isSelected() ? 4 : rbQ2.isSelected() ? 2 : 1 );
+            pool.setTitle( edTitle.getText());
+            pool.setPostfix( edPostFix.getText());
+            pool.setLabel(0, edQ1.getText());
+            pool.setLabel(1, edQ2.getText());
+            pool.setLabel(2, edQ3.getText());
+            pool.setLabel(3, edQ4.getText());
+            pool.setQCount( rbQ4.isSelected() ? 4 : rbQ2.isSelected() ? 2 : 1 );
 
             for ( int i = 0; i < 100; i++ )
             {
