@@ -63,6 +63,8 @@ public class SBPoolerGUI
          @Override
          public void actionPerformed( ActionEvent e )
          {
+            pool.clear_names();
+
             Date d = new Date();
             pool.s_log = edLogFile.getText();
 

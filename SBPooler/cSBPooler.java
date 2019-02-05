@@ -59,6 +59,12 @@ public class cSBPooler
       else
          return "";
    }
+
+   public void clear_names()
+   {
+      c_names.clear();
+   }
+
    public void setLabel( int idx, String label )
    {
       if ( idx >= 0 && idx < 4 )
@@ -211,6 +217,7 @@ public class cSBPooler
       try
       {
          FileWriter writer = new FileWriter( s_dir + "Short_Format" + s_postfix + ".csv" );
+         writer.write( title + "\n"  );
          String append = "," + s_labels[0] + "," + s_labels[1] + ","  +  s_labels[2] + "," + s_labels[3] + ",";
 
          if ( q_cnt == 2 )
@@ -270,7 +277,7 @@ public class cSBPooler
          log( "\nCreating Grid" );
 
          Element head_node = add_element( xml, root_node, "head", "" );
-         add_element( xml, head_node, "title", "Superbowl Pool - " + title );
+         add_element( xml, head_node, "title",  title );
 
          Element link_node = add_element( xml, head_node, "link", "" );
          link_node.setAttribute( "rel", "stylesheet" );
@@ -300,6 +307,8 @@ public class cSBPooler
          }
          table_col.setAttribute( "class", "nfc_team" );
          table_col.setAttribute( "colspan", "10" );
+
+         int q_factor = 4 / q_cnt;
 
          for ( int j = 0; j < q_cnt; j++ )
          {
@@ -354,7 +363,7 @@ public class cSBPooler
                table_col = add_element( xml, table_row, "td", Integer.toString( nfc_arr[j][i] ));
                String s = "nfc " + "q" + Integer.toString( j + 1 ) + " c" + Integer.toString( i );
                table_col.setAttribute( "class", s );
-               s = "n" + Integer.toString( j + 1 ) + Integer.toString( nfc_arr[j][i] );
+               s = "n" + Integer.toString((j + 1) * q_factor ) + Integer.toString( nfc_arr[j][i] );
                table_col.setAttribute( "id", s );
             }
          }
@@ -381,7 +390,7 @@ public class cSBPooler
                table_col = add_element( xml, table_row, "td", Integer.toString( afc_arr[j][i] ) );
                String s = "afc " + "q" + Integer.toString( j + 1) + " r" + Integer.toString( i );
                table_col.setAttribute( "class", s );
-               s = "a" + Integer.toString( j + 1) + Integer.toString( afc_arr[j][i] );
+               s = "a" + Integer.toString( (j + 1) * q_factor ) + Integer.toString( afc_arr[j][i] );
                table_col.setAttribute( "id", s );
             }
 
@@ -389,8 +398,15 @@ public class cSBPooler
             {
                table_col = add_element( xml, table_row, "td", c_names.get(( i * 10 ) + j ));
                String str = "r" + Integer.toString( i ) + " c" + Integer.toString( j );
+
+               for ( int k = 0; k < q_cnt; k++ )
+               {
+                  str += " s" + Integer.toString(( k + 1 ) * q_factor );
+                  str += Integer.toString( nfc_arr[k][j] );
+                  str += Integer.toString( afc_arr[k][i] );
+               }
                table_col.setAttribute( "class", str );
-               table_col.setAttribute( "id", Integer.toString( i * 10 + j ));
+               table_col.setAttribute( "id", "i" + Integer.toString( i * 10 + j ));
             }
          }
 
