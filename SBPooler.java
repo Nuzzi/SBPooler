@@ -9,20 +9,38 @@ import java.util.Date;
 
 public class SBPooler extends cSBPooler
 {
+   public static int parseToInt(String stringToParse, int defaultValue)
+   {
+      int ret;
+      try
+      {
+         ret = Integer.parseInt(stringToParse);
+      }
+      catch(NumberFormatException ex)
+      {
+         ret = defaultValue; //Use default value if parsing failed
+      }
+      return ret;
+   }
+
    public static void main( String[] args )
    {
       SBPooler pool = new SBPooler();
+
+      // Get log filename first if it exists
+      for ( int i = 0; i < args.length; i++ )
+         if ( args[i].toLowerCase().equals( "/l" ))
+         {
+            pool.s_log = args[++i];
+            pool.log( "Used Log File: " + pool.s_log );
+         }
+
       for ( int i = 0; i < args.length; i++ )
       {
          if ( args[i].toLowerCase().equals( "/n" ))
          {
             pool.s_names = args[++i];
             pool.log( "Used Name File: " + pool.s_names );
-         }
-         else if ( args[i].toLowerCase().equals( "/l" ))
-         {
-            pool.s_log = args[++i];
-            pool.log( "Used Log File: " + pool.s_log );
          }
          else if ( args[i].toLowerCase().equals( "/p" ))
          {
@@ -77,10 +95,10 @@ public class SBPooler extends cSBPooler
             pool.setLabel(3, args[++i] );
             //pool.log( "Using Title: " + pool.title );
          }
-         else if ( args[i].toLowerCase().equals( "/nj" ))
+         else if ( args[i].toLowerCase().equals( "/j" ))
          {
-            pool.setJumbled( false );
-            pool.log( "Name jumbling disabled." );
+            pool.setJumbles( parseToInt( args[++i], 1 ));
+            pool.log( "Using " + pool.getJumbles() + " Jumbles" );
          }
          else if ( args[i].toLowerCase().equals( "/q1" ))
          {
@@ -103,7 +121,7 @@ public class SBPooler extends cSBPooler
             System.out.println( "/t1..4 <text> - \"Quarter\" Title (default: 1st Quarter, Halftime, 3rd Quarter, Final)" );
             System.out.println( "/afc <text> - AFC Team Name (default: AFC)" );
             System.out.println( "/nfc <text> - NFC Team Name (default: NFC)" );
-            System.out.println( "/nj - \"No Jumbling,\" do not randomize the input names list" );
+            System.out.println( "/j <number> - Randomization iterations (default: 1)" );
             System.out.println( "/q1 - Only use one set of random numbers (Final)" );
             System.out.println( "/q2 - Only use two sets of random numbers (Halftime, Final)." );
             return;
@@ -128,9 +146,10 @@ public class SBPooler extends cSBPooler
          pool.log( tmp_str );
       }
 
-      if ( pool.isJumbled()) pool.jumble_names();
+      pool.jumble_names();
       pool.create_grid();
-      pool.create_short_format();
+      // Short format no longer needed with the gris on one sheet
+      // pool.create_short_format();
 
       System.out.println( "Process Complete" );
       pool.log( "\nProcess Complete" );
