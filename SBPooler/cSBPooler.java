@@ -81,9 +81,10 @@ public class cSBPooler
    }
 
    // Jumble Names - set this to false if you do not want to change the order of the names.
-   private boolean b_jumble = true;
-   public boolean isJumbled() { return b_jumble; }
-   public void setJumbled( boolean jumble ) { this.b_jumble = jumble; }
+   private int i_jumbles = 1;
+   public void setJumbles( int i ) { this.i_jumbles = i; }
+   public int getJumbles() { return i_jumbles; }
+   public boolean isJumbled() { return i_jumbles > 0; }
 
    private int [][] afc_arr = {
            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
@@ -148,15 +149,23 @@ public class cSBPooler
 
    public void jumble_names()
    {
+      if ( i_jumbles == 0 ) return;
+
       log( "\nJumbling Names" );
-      for ( int i = 0; i < c_names.size(); i++ )
+
+      for ( int j = 1; j <= i_jumbles; j++ )
       {
-         swap( i, rn.nextInt( c_names.size()));
+         log( "\nJumble " + j + ":\n" );
+         for ( int i = 0; i < c_names.size(); i++ )
+         {
+            swap( i, rn.nextInt( c_names.size() ) );
+         }
       }
 
       log( "\nNew List Looks Like:" );
       for ( int i = 0; i < c_names.size(); i++ )
-         log( "Name " + ( i + 1 ) + ": " + c_names.get( i ));
+         log( "Name " + ( i + 1 ) + ": " + c_names.get( i ) );
+
    }
 
    public int read_names()
