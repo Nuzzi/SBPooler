@@ -308,12 +308,14 @@ public class cSBPooler
          table_col.setAttribute( "class", "clt q0" );
          table_col.setAttribute( "colspan", Integer.toString( q_cnt + 1 )); //
 
-         table_col = add_element( xml, table_row, "td", "" ); // NFC team name
+         table_col = add_element( xml, table_row, "td", nfc_team ); // NFC team name
+         /*
          for ( int i = 0; i < nfc_team.length(); i++ )
          {
             String s = table_col.getTextContent();
             table_col.setTextContent( s += nfc_team.substring( i, i + 1 ) + " " );
          }
+          */
          table_col.setAttribute( "class", "nfc_team" );
          table_col.setAttribute( "colspan", "10" );
 
@@ -381,10 +383,14 @@ public class cSBPooler
          // Write AFC rows and names
          table_row = add_element( xml, table_node, "tr", "" );
          table_col = add_element( xml, table_row, "td", "" );
-         for ( int i = 0; i < afc_team.length(); i++ )
+         for ( int i = afc_team.length() - 1; i >= 0 ; i-- )
          {
             Element block = add_element( xml, table_col, "span", "" );
-            block.setTextContent( afc_team.substring( i, i + 1 ));
+            String s = afc_team.substring( i, i + 1 );
+            if ( s.contains( " " ))
+               block.setTextContent( "\u00A0" );
+            else
+               block.setTextContent( s );
          }
 
          table_col.setAttribute( "rowspan", "10" );
